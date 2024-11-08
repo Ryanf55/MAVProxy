@@ -91,11 +91,22 @@ class ConsoleModule(mp_module.MPModule):
         # create the main menu
         if mp_util.has_wxpython:
             self.menu = MPMenuTop([])
+            mavproxy_items = [MPMenuItem('Settings', 'Settings', 'menuSettings'),
+                              MPMenuItem('Show Map', 'Load Map', '# module load map'),
+                              MPMenuItem('Show HUD', 'Load HUD', '# module load horizon'),
+                              MPMenuItem('Show Checklist', 'Load Checklist', '# module load checklist')]
+            
+            # wsproto is not installed by default.
+            # Only add the menu if it's available.
+            try:
+                import wsproto
+            except ImportError:
+                pass
+            else:
+                mavproxy_items.append(MPMenuItem('Start Websocket Server', 'Start Websocket Server', '# output add wsserver:0.0.0.0:5863'))
+
             self.add_menu(MPMenuSubMenu('MAVProxy',
-                                        items=[MPMenuItem('Settings', 'Settings', 'menuSettings'),
-                                               MPMenuItem('Show Map', 'Load Map', '# module load map'),
-                                               MPMenuItem('Show HUD', 'Load HUD', '# module load horizon'),
-                                               MPMenuItem('Show Checklist', 'Load Checklist', '# module load checklist')]))
+                                        items=mavproxy_items))
             self.vehicle_menu = MPMenuSubMenu('Vehicle', items=[])
             self.add_menu(self.vehicle_menu)
 
