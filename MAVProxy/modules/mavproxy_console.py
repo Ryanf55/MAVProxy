@@ -103,7 +103,14 @@ class ConsoleModule(mp_module.MPModule):
             except ImportError:
                 pass
             else:
-                mavproxy_items.append(MPMenuItem('Start Websocket Server', 'Start Websocket Server', '# output add wsserver:0.0.0.0:5863'))
+                mavproxy_items.append(
+                    MPMenuItem('Start Websocket Server',
+                               'Start Websocket Server',
+                               '# output add wsserver:0.0.0.0:',
+                                handler=MPMenuCallTextDialog(
+                                    title='Websocket Port',
+                                    default=5863
+                                )))
 
             self.add_menu(MPMenuSubMenu('MAVProxy',
                                         items=mavproxy_items))
