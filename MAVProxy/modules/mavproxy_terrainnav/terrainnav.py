@@ -45,13 +45,13 @@ class TerrainNavModule(mp_module.MPModule):
             [
                 # TODO: change this to a mode: GCS, ONBOARD_COMPUTER
                 MPSetting("onboard_computer_mode", bool, False),
-                MPSetting("loiter_agl_alt", float, 60.0),
-                MPSetting("loiter_radius", float, 60.0),  # WP_LOITER_RADIUS
+                MPSetting("loiter_agl_alt", float, 60.0), # Auto alt or RTL altitude
+                MPSetting("loiter_radius", float, 60.0),  # WP_LOITER_RAD
                 MPSetting("turning_radius", float, 60.0),  # WP_LOITER_RADIUS
                 MPSetting("climb_angle_deg", float, 8.0),  # TECS_CLMB_MAX
                 MPSetting("max_agl_alt", float, 100.0),
                 MPSetting("min_agl_alt", float, 50.0),
-                MPSetting("grid_spacing", float, 30.0),
+                MPSetting("grid_spacing", float, 30.0), # TERRAIN_SPACING
                 MPSetting("grid_length", float, 10000.0),
                 MPSetting("time_budget", float, 20.0),
                 MPSetting("resolution", float, 100.0),
@@ -255,6 +255,21 @@ class TerrainNavModule(mp_module.MPModule):
         if rally_module is None:
             return
 
+        if msg:
+            mtype = msg.get_type()
+            if mtype in ["PARAM_VALUE"]:
+                if msg.param_id == "WP_LOITER_RAD":
+                    print(f"Got PARAM_VALUE param_id={msg.param_id}, param_value={msg.param_value}")
+                    self.terrainnav_settings.loiter_radius = msg.param_value
+                    self.terrainnav_settings.turning_radius = msg.param_value
+                elif msg.param_id == "TECS_CLMB_MAX":
+                    self.terrainnav_settings.climb_angle_deg = msg.param_value
+
+
+                # MPSetting("loiter_radius", float, 60.0),  # WP_LOITER_RAD
+                # MPSetting("turning_radius", float, 60.0),  # WP_LOITER_RADIUS
+                # MPSetting("climb_angle_deg", float, 8.0),  # TECS_CLMB_MAX
+             
         # onboard computer mode only
         if msg and self.terrainnav_settings.onboard_computer_mode:
             mtype = msg.get_type()
